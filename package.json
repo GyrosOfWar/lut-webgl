@@ -5,13 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
     "format": "prettier --write ./src/**/*.{ts,css}"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^1.0.2",
+    "@tsconfig/svelte": "^3.0.0",
+    "autoprefixer": "^10.4.8",
+    "postcss": "^8.4.16",
     "prettier": "^2.7.1",
-    "typescript": "^4.8.2",
+    "svelte": "^3.49.0",
+    "svelte-check": "^2.8.1",
+    "svelte-preprocess": "^4.10.7",
+    "tailwindcss": "^3.1.8",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4",
     "vite": "^3.1.0",
     "vite-plugin-glsl": "^0.3.0"
   }

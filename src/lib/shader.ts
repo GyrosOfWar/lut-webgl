@@ -1,4 +1,4 @@
-export function loadShader(
+function loadShader(
   gl: WebGLRenderingContext,
   type: number,
   source: string
