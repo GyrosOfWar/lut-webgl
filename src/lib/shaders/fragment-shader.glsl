@@ -1,17 +1,18 @@
 #version 300 es
 
+// fragment shaders don't have a default precision so we need
+// to pick one. highp is a good default. It means "high precision"
 precision highp float;
-precision highp sampler3D;
 
-in vec2 texCoord;
-uniform sampler3D lut;
-uniform sampler2D image;
-uniform vec3 lutSize;
-out vec4 colorOut;
+// our texture
+uniform sampler2D u_image;
+
+// the texCoords passed in from the vertex shader.
+in vec2 v_texCoord;
+
+// we need to declare an output for the fragment shader
+out vec4 outColor;
 
 void main() {
-  vec3 scale = (lutSize - 1.0) / lutSize;    
-  vec3 offset = 1.0 / (2.0 * lutSize);
-  vec3 rawColor = texture(image, texCoord).rgb;
-  colorOut = texture(lut, scale * rawColor + offset);
+  outColor = texture(u_image, v_texCoord);
 }
