@@ -18,12 +18,27 @@ export class CubeLut {
   domainMin: Rgb
   domainMax: Rgb
   size: number
-  data: Float64Array
+  data: Rgb[]
 }
 
 export function parseCubeLut(input: string) {
   const lines = input.split("\n")
-  const lut = {}
+  const data = []
 
-  return lut
+  lines.forEach((line) => {
+    line = line.trim()
+    if (line.startsWith("#")) {
+      return
+    }
+
+    const match = RGB_REGEX.exec(line)
+    if (match?.length === 4) {
+      const r = parseFloat(match[1])
+      const g = parseFloat(match[2])
+      const b = parseFloat(match[3])
+      data.push({r, g, b})
+    }
+  })
+
+  return {data}
 }
