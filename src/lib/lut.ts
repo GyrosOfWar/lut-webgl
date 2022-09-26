@@ -2,18 +2,18 @@
 
 const RGB_REGEX = /\s*([.0-9]+)\s+([.0-9]+)\s+([.0-9]+)/
 const TITLE_REGEX = /TITLE "(.*)"/
-const DOMAIN_MIN_REGEX = /DOMAIN_MIN ([.0-9]+)\s+([.0-9]+)/
-const DOMAIN_MAX_REGEX = /DOMAIN_MAX ([.0-9]+)\s+([.0-9]+)/
+const DOMAIN_MIN_REGEX = /DOMAIN_MIN ([.0-9]+)\s+([.0-9]+)\s+([.0-9]+)/
+const DOMAIN_MAX_REGEX = /DOMAIN_MAX ([.0-9]+)\s+([.0-9]+)\s+([.0-9]+)/
 const SIZE_REGEX = /LUT_3D_SIZE ([0-9]+)/
 
 type LineType = "color" | "domainMin" | "domainMax" | "size" | "title"
 
 const REGEXES: {regex: RegExp; type: LineType}[] = [
-  {regex: RGB_REGEX, type: "color"},
   {regex: TITLE_REGEX, type: "title"},
   {regex: DOMAIN_MAX_REGEX, type: "domainMax"},
   {regex: DOMAIN_MIN_REGEX, type: "domainMin"},
   {regex: SIZE_REGEX, type: "size"},
+  {regex: RGB_REGEX, type: "color"},
 ]
 
 export type Rgb = [number, number, number]
@@ -59,7 +59,7 @@ function matchRegexes(line: string): Line | undefined {
         }
 
         case "title": {
-          return {type, value: match[1].trim()}
+          return {type, value: match[1].trim().replace(/"/g, "")}
         }
       }
     }
@@ -68,7 +68,7 @@ function matchRegexes(line: string): Line | undefined {
   return undefined
 }
 
-export class CubeLut {
+export interface CubeLut {
   title?: string
   kind: "one" | "three"
   domainMin: Rgb
@@ -77,9 +77,21 @@ export class CubeLut {
   data: Rgb[]
 }
 
-export function parseCubeLut(input: string) {
+interface CubeLutBuilder {
+  title?: string
+  kind: "one" | "three"
+  domainMin?: Rgb
+  domainMax?: Rgb
+  size?: number
+  data: Rgb[]
+}
+
+export function parseCubeLut(input: string): CubeLut {
   const lines = input.split("\n")
-  const data = []
+  const lut: CubeLutBuilder = {
+    data: [],
+    kind: "three",
+  }
 
   lines.forEach((line) => {
     line = line.trim()
@@ -90,11 +102,23 @@ export function parseCubeLut(input: string) {
     if (parsedLine) {
       switch (parsedLine.type) {
         case "color":
-          data.push(parsedLine.value)
+          lut.data.push(parsedLine.value)
+          break
+        case "title":
+          lut.title = parsedLine.value
+          break
+        case "domainMax":
+          lut.domainMax = parsedLine.value
+          break
+        case "domainMin":
+          lut.domainMin = parsedLine.value
+          break
+        case "size":
+          lut.size = parsedLine.value
           break
       }
     }
   })
 
-  return {data}
+  return lut as CubeLut
 }
