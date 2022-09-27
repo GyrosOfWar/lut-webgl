@@ -1,4 +1,4 @@
-// basic cube LUT parser
+import invariant from "tiny-invariant"
 
 const RGB_REGEX = /\s*([.0-9]+)\s+([.0-9]+)\s+([.0-9]+)/
 const TITLE_REGEX = /TITLE "(.*)"/
@@ -74,7 +74,7 @@ export interface CubeLut {
   domainMin: Rgb
   domainMax: Rgb
   size: number
-  data: Rgb[]
+  data: Float64Array
 }
 
 interface CubeLutBuilder {
@@ -84,6 +84,21 @@ interface CubeLutBuilder {
   domainMax?: Rgb
   size?: number
   data: Rgb[]
+}
+
+function fromBuilder(lut: CubeLutBuilder): CubeLut {
+  invariant(lut.domainMin, "no domain minimum")
+  invariant(lut.domainMax, "no domain maximum")
+  invariant(lut.size, "no size")
+
+  return {
+    title: lut.title,
+    kind: lut.kind,
+    domainMin: lut.domainMin,
+    domainMax: lut.domainMax,
+    data: Float64Array.from(lut.data.flat()),
+    size: lut.size,
+  }
 }
 
 export function parseCubeLut(input: string): CubeLut {
@@ -120,5 +135,5 @@ export function parseCubeLut(input: string): CubeLut {
     }
   })
 
-  return lut as CubeLut
+  return fromBuilder(lut)
 }

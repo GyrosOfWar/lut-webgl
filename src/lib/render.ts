@@ -1,3 +1,5 @@
+import { parseCubeLut } from "./lut"
+
 function setRectangle(
   gl: WebGL2RenderingContext,
   x: number,
@@ -21,7 +23,7 @@ export function renderImage(
   image: HTMLImageElement,
   program: WebGLProgram
 ) {
-  // const program = initShaderProgram(gl, vertexShader, fragmentShader)
+  // const lut = parseCubeLut()
 
   // look up where the vertex data needs to go.
   const positionAttributeLocation = gl.getAttribLocation(program, "a_position")
